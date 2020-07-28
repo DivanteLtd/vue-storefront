@@ -119,7 +119,7 @@
       </div>
       <div class="form__action">
         <!-- TODO: add nuxt link for returning to personal details -->
-        <SfButton data-cy="payment-btn_go-back" class="color-secondary form__back-button">
+        <SfButton data-cy="payment-btn_go-back" class="color-secondary form__back-button" @click="$emit('prevStep')">
           Go back
         </SfButton>
         <SfButton data-cy="payment-btn_review" class="form__action-button" @click="$emit('nextStep')">
