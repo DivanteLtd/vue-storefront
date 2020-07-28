@@ -51,11 +51,8 @@
               </div>
             </div>
           </div>
-          <p class="product-details__description desktop-only">
-            Find stunning women cocktail and party dresses. Stand out in lace
-            and metallic cocktail dresses and party dresses from all your
-            favorite brands.
-          </p>
+          <div class="product-details__description desktop-only" v-html="shortDescription">
+          </div>
           <div class="product-details__action desktop-only">
             <SfButton data-cy="product-btn_size-guide" class="sf-button--text color-secondary"
               >Size guide</SfButton
@@ -116,7 +113,8 @@
           </div>
           <SfTabs class="product-details__tabs" :openTab="2">
             <SfTab data-cy="product-tab_description" title="Description">
-              <div>
+              <div v-html="productGetters.getDescription(product)" v-if="productGetters.getDescription"></div>
+              <div v-else>
                 <p>
                   The Karissa V-Neck Tee features a semi-fitted shape that's
                   flattering for every figure. You can hit the gym with
@@ -238,6 +236,19 @@ export default {
     const options = computed(() => productGetters.getAttributes(products.value, ['color', 'size']));
     const configuration = computed(() => productGetters.getAttributes(product.value, ['color', 'size']));
     const categories = computed(() => productGetters.getCategoryIds(product.value));
+    const shortDescription = computed(() => {
+      if (productGetters?.getShortDescription)
+        return productGetters.getShortDescription(product.value);
+      else {
+        let description = productGetters.getDescription(product.value);
+        if (description.length > 250) {
+          let spaceIndex = description.indexOf(' ', 250);
+          if (spaceIndex >= 0)
+            description = description.substr(0, spaceIndex);
+        }
+        return description;
+      }
+    });
     const breadcrumbs = computed(() => productGetters.getBreadcrumbs ? productGetters.getBreadcrumbs(product.value) : props.fallbackBreadcrumbs);
 
     onSSR(async () => {
@@ -265,6 +276,7 @@ export default {
       addToCart,
       loading,
       productGetters,
+      shortDescription,
       breadcrumbs
     };
   },
