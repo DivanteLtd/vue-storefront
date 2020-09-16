@@ -84,6 +84,10 @@ const buildProductWhere = (search: ProductSearch) => {
     ];
   }
 
+  if (predicates.length === 0) {
+    return null;
+  }
+
   return predicates.join(' and ');
 };
 
@@ -99,7 +103,7 @@ const buildCategoryWhere = (search: CategorySearch) => {
     return `slug(${predicate})`;
   }
 
-  return '';
+  return null;
 };
 
 const buildOrderWhere = (search: OrderSearch): string => {

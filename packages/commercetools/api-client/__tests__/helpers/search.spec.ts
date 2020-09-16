@@ -8,11 +8,11 @@ import { getSettings } from '../../src';
 
 describe('[commercetools-api-client] search', () => {
   it('returns undefined when parameters are not supported', () => {
-    expect(buildProductWhere(null)).toBe('');
+    expect(buildProductWhere(null)).toBe(null);
   });
 
   it('returns undefined string when parameters are not supported', () => {
-    expect(buildCategoryWhere(null)).toBe('');
+    expect(buildCategoryWhere(null)).toBe(null);
   });
 
   it('returns undefined string when parameters are not supported', () => {
@@ -50,7 +50,7 @@ describe('[commercetools-api-client] search', () => {
 
   describe('using filters', () => {
     it('returns empty string for empty filters', () => {
-      expect(buildProductWhere({ filters: {} })).toEqual('');
+      expect(buildProductWhere({ filters: {} })).toEqual(null);
     });
 
     it('returns empty string when no option is selected', () => {
@@ -65,7 +65,7 @@ describe('[commercetools-api-client] search', () => {
           }
         }
       };
-      expect(buildProductWhere(search)).toEqual('');
+      expect(buildProductWhere(search)).toEqual(null);
     });
 
     it(`returns product search query by ${AttributeType.STRING}`, () => {
