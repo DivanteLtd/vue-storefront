@@ -82,7 +82,7 @@
                 :key="i"
                 :color="color.value"
                 class="product__color"
-                @click="updateFilter({color})"
+                @click="updateFilter({color: color.value})"
               />
             </div>
           </div>
