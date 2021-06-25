@@ -50,19 +50,20 @@ export default {
     left: auto;
     bottom: auto;
     right: 5%;
-    width: 320px;
+    width: 360px;
   }
 }
 .sf-notification {
   max-width: 100%;
   margin: var(--spacer-xs) auto 0 auto;
+  --notification-font-size: var(--font-size--sm);
   &:first-child {
     margin-top: 0;
   }
   @include for-mobile {
     --notification-border-radius: 0;
     --notification-max-width: 100%;
-    --notification-background: var(--c-link);
+    --notification-background: var(--c-link) !important;
     --notification-font-size: var(--font-size--sm);
     --notification-font-family: var(--font-family--primary);
     --notification-font-weight: var(--font-weight--normal);
@@ -83,12 +84,14 @@ export default {
   transform: translateY(40px);
   @include for-desktop {
     opacity: 0;
+    transform: translateY(0);
   }
 }
 .slide-fade-leave-to {
   transform: translateY(80px);
   @include for-desktop {
     opacity: 0;
+    transform: translateY(0);
   }
 }
 </style>

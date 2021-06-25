@@ -118,5 +118,18 @@ export default {
   'Let’s start now – we’ll help you': 'Fangen wir jetzt an - wir helfen Ihnen.',
   'Search results': 'Suchergebnisse',
   'Product suggestions': 'Produktvorschläge',
-  'Search for items': 'Nach Artikeln suchen'
+  'Search for items': 'Nach Artikeln suchen',
+  'Successfully logged in': 'Erfolgreich angemeldet',
+  'Successfully created a new account': 'Ein neues Konto wurde erfolgreich erstellt',
+  'Something went wrong!': 'Etwas ist schief gelaufen!',
+  'Account with the given credentials not found.': 'Konto mit den angegebenen Anmeldeinformationen nicht gefunden.',
+  'Your email': 'Deine E-Mail',
+  'Password': 'Passwort',
+  'Remember me': 'Mich erinnern',
+  'I want to create an account': 'Ich möchte ein Konto erstellen',
+  'First Name': 'Vorname',
+  'Last Name': 'Nachname',
+  'Log in': 'Einloggen',
+  'Sign in': 'Anmelden',
+  'This field is required': 'Dieses Feld ist erforderlich'
 };

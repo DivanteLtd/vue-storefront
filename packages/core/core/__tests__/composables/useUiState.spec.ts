@@ -3,15 +3,17 @@ import { useUiState } from '../../../nuxt-theme-module/theme/composables';
 const {
   isCartSidebarOpen,
   isWishlistSidebarOpen,
-  isLoginModalOpen,
+  isAuthModalOpen,
   isCategoryGridView,
   isFilterSidebarOpen,
+  currentAuthModal,
   toggleCartSidebar,
   toggleWishlistSidebar,
-  toggleLoginModal,
+  toggleAuthModal,
   changeToCategoryListView,
   changeToCategoryGridView,
-  toggleFilterSidebar
+  toggleFilterSidebar,
+  switchAuthModal
 } = useUiState();
 
 describe('useUiState', () => {
@@ -31,12 +33,21 @@ describe('useUiState', () => {
     expect(expectedIsWishlistSidebarOpen).toBe(isWishlistSidebarOpen.value);
   });
 
-  it('Login Modal', () => {
-    const expectedIsLoginModalOpen = !isLoginModalOpen.value;
+  it('Auth Modal', () => {
+    const expectedIsAuthModalOpen = !isAuthModalOpen.value;
 
-    toggleLoginModal();
+    toggleAuthModal();
 
-    expect(expectedIsLoginModalOpen).toBe(isLoginModalOpen.value);
+    expect(expectedIsAuthModalOpen).toBe(isAuthModalOpen.value);
+  });
+
+  it('switches modal to register', () => {
+
+    const expectedCurrentAuthModal = 'register';
+
+    switchAuthModal('register');
+
+    expect(expectedCurrentAuthModal).toBe(currentAuthModal.value);
   });
 
   it('Grid View', () => {

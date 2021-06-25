@@ -118,5 +118,19 @@ export default {
   'Let’s start now – we’ll help you': 'Let’s start now – we’ll help you.',
   'Search results': 'Search results',
   'Product suggestions': 'Product suggestions',
-  'Search for items': 'Search for items'
+  'Search for items': 'Search for items',
+  'Successfully logged in': 'Successfully logged in',
+  'Successfully created a new account': 'Successfully created a new account',
+  'Something went wrong!': 'Something went wrong!',
+  'Account with the given credentials not found.': 'Account with the given credentials not found.',
+  'There is already an existing customer with this email {EMAIL}': 'There is already an existing customer with this email {EMAIL}',
+  'Your email': 'Your email',
+  'Password': 'Password',
+  'Remember me': 'Remember me',
+  'I want to create an account': 'I want to create an account',
+  'First Name': 'First Name',
+  'Last Name': 'Last Name',
+  'Log in': 'Log in',
+  'Sign in': 'Sign in',
+  'This field is required': 'This field is required'
 };

@@ -126,7 +126,7 @@ export default {
   },
   directives: { clickOutside },
   setup(props, { root }) {
-    const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal } = useUiState();
+    const { toggleCartSidebar, toggleWishlistSidebar, toggleAuthModal } = useUiState();
     const { setTermForUrl, getFacetsFromURL } = useUiHelpers();
     const { isAuthenticated, load: loadUser } = useUser();
     const { cart } = useCart();
@@ -150,7 +150,7 @@ export default {
         return root.$router.push('/my-account');
       }
 
-      toggleLoginModal();
+      toggleAuthModal();
     };
 
     const closeSearch = () => {
