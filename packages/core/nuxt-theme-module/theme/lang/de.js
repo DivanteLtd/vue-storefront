@@ -118,5 +118,8 @@ export default {
   'Let’s start now – we’ll help you': 'Fangen wir jetzt an - wir helfen Ihnen.',
   'Search results': 'Suchergebnisse',
   'Product suggestions': 'Produktvorschläge',
-  'Search for items': 'Nach Artikeln suchen'
+  'Search for items': 'Nach Artikeln suchen',
+  'Go to Checkout': 'Zum Checkout gehen',
+  'Successfully added {PRODUCT_NAME} to the cart': '{PRODUCT_NAME} wurde erfolgreich in den Warenkorb gelegt',
+  'Successfully added product to the cart': 'Produkt wurde erfolgreich in den Warenkorb gelegt'
 };

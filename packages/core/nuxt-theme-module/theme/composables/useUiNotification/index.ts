@@ -1,33 +1,29 @@
-import { computed, reactive } from '@vue/composition-api';
+import { reactive } from '@vue/composition-api';
 
-interface UiNotification {
+interface UseUiNotification {
   message: string;
-  action: { text: string; onClick: (...args: any) => void };
   type: 'danger' | 'success' | 'info';
-  icon: string;
-  persist: boolean;
-  id: symbol;
-  dismiss: () => void;
+  action?: { text: string; onClick: () => void };
+  icon?: string;
+  persist?: boolean;
+  id?: symbol;
+  dismiss?: () => void;
 }
 
-interface Notifications {
-  notifications: Array<UiNotification>;
-}
+type SendUiNotificationParams = Omit<UseUiNotification, 'id'|'dismiss'>;
 
-const state = reactive<Notifications>({
-  notifications: []
-});
+const notifications = reactive<Array<UseUiNotification>>([]);
 const maxVisibleNotifications = 3;
 const timeToLive = 3000;
 
 const useUiNotification = () => {
-  const send = (notification: UiNotification) => {
+  const send = (notification: SendUiNotificationParams) => {
     const id = Symbol();
 
     const dismiss = () => {
-      const index = state.notifications.findIndex(notification => notification.id === id);
+      const index = notifications.findIndex(notification => notification.id === id);
 
-      if (index !== -1) state.notifications.splice(index, 1);
+      if (index !== -1) notifications.splice(index, 1);
     };
 
     const newNotification = {
@@ -36,8 +32,8 @@ const useUiNotification = () => {
       dismiss
     };
 
-    state.notifications.push(newNotification);
-    if (state.notifications.length > maxVisibleNotifications) state.notifications.shift();
+    notifications.push(newNotification);
+    if (notifications.length > maxVisibleNotifications) notifications.shift();
 
     if (!notification.persist) {
       setTimeout(dismiss, timeToLive);
@@ -46,7 +42,7 @@ const useUiNotification = () => {
 
   return {
     send,
-    notifications: computed(() => state.notifications)
+    notifications
   };
 };
 

@@ -147,3 +147,58 @@ Below you can find a list of the most important Nuxt Modules and libraries that 
 - [`@storefront-ui/vue`](https://storefrontui.io);
 - [`wee-validate`](https://vee-validate.logaretm.com/v3);
 - [`lodash`](https://lodash.com/);
+
+## In-app Notifications
+
+In Vue Storefront we're providing Notifications system based on composable `useUiNotification`. Also, we have prepared [common notification messages](/guide/theme.html#example-of-use-common-notification-messages). You can find them inside the assets directory (`/assets/notifications`).
+
+There are three types of notifications: `danger`, `success` and `info`.
+
+### How to send notification?
+
+To send a new notification you need to only import `useUiNotification` from composables and pass `type` and `message` to the `send` function.
+
+```js
+import { useUiNotification } from '~/composables';
+
+export default {
+  setup() {
+    const { send } = useUiNotification();
+
+    send({
+      type: 'success',
+      message: 'Successfully added product to the cart'
+    })
+  } 
+}
+```
+
+```ts
+type SendUiNotificationParams = {
+  message: string;
+  type: 'danger' | 'success' | 'info';
+  action?: { text: string; onClick: () => void };
+  icon?: string;
+  persist?: boolean;
+  dismiss?: () => void;
+}
+```
+
+### Example of use common notification messages
+
+```js
+import { useCart } from '<%= options.generate.replace.composables %>';
+import sendNotification from '~/assets/notifications';
+
+export default {
+  setup() {
+    const { addItem: addItemToCart, isInCart, error } = useCart();
+    const { cart: sendCartNotification } = sendNotification();
+
+    sendCartNotification.addItem({
+      productName: PRODUCT_NAME,
+      error: error.value.addItem ? error.value.addItem.message : false
+    });
+  } 
+}
+```

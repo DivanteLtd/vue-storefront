@@ -82,7 +82,7 @@
             :disabled="loading"
             :canAddToCart="stock > 0"
             class="product__add-to-cart"
-            @click="addItem({ product, quantity: parseInt(qty) })"
+            @click="addToCart(product, parseInt(qty))"
           />
         </div>
 
@@ -186,6 +186,7 @@ import InstagramFeed from '~/components/InstagramFeed.vue';
 import RelatedProducts from '~/components/RelatedProducts.vue';
 import { ref, computed } from '@vue/composition-api';
 import { useProduct, useCart, productGetters, useReview, reviewGetters } from '<%= options.generate.replace.composables %>';
+import sendNotification from '~/assets/notifications';
 import { onSSR } from '@vue-storefront/core';
 import MobileStoreBanner from '~/components/MobileStoreBanner.vue';
 import LazyHydrate from 'vue-lazy-hydration';
@@ -193,12 +194,13 @@ import LazyHydrate from 'vue-lazy-hydration';
 export default {
   name: 'Product',
   transition: 'fade',
-  setup(props, context) {
+  setup(_, context) {
     const qty = ref(1);
     const { id } = context.root.$route.params;
     const { products, search } = useProduct('products');
     const { products: relatedProducts, search: searchRelatedProducts, loading: relatedLoading } = useProduct('relatedProducts');
-    const { addItem, loading } = useCart();
+    const { addItem, loading, error } = useCart();
+    const { cart: sendCartNotification } = sendNotification();
     const { reviews: productReviews, search: searchReviews } = useReview('productReviews');
 
     const product = computed(() => productGetters.getFiltered(products.value, { master: true, attributes: context.root.$route.query })[0]);
@@ -232,6 +234,14 @@ export default {
       });
     };
 
+    const addToCart = async (product, quantity) => {
+      await addItem({ product, quantity });
+      sendCartNotification.addItem({
+        productName: productGetters.getName(product),
+        error: error.value.addItem ? error.value.addItem.message : false
+      });
+    };
+
     return {
       updateFilter,
       configuration,
@@ -244,7 +254,7 @@ export default {
       relatedLoading,
       options,
       qty,
-      addItem,
+      addToCart,
       loading,
       productGetters,
       productGallery

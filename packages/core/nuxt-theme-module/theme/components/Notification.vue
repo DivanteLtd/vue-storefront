@@ -7,7 +7,7 @@
       :action="notification.action && notification.action.text"
       :type="notification.type"
       @click:close="notification.dismiss"
-      @click:action="notification.action && notification.action.onClick()"
+      @click:action="notification.action && notification.action.onClick(); notification.dismiss()"
       visible
     >
       <template #icon v-if="notification.icon">
@@ -37,7 +37,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .notifications {
   position: fixed;
   width: 100%;
@@ -50,26 +50,33 @@ export default {
     left: auto;
     bottom: auto;
     right: 5%;
-    width: 320px;
+    width: 360px;
   }
 }
 .sf-notification {
   max-width: 100%;
   margin: var(--spacer-xs) auto 0 auto;
+  --notification-font-size: var(--font-size--sm);
   &:first-child {
     margin-top: 0;
   }
+  &__message {
+    margin: 0 var(--spacer-base) var(--spacer-2xs) 0;
+  }
   @include for-mobile {
+    --notification-background: var(--c-link) !important;
     --notification-border-radius: 0;
     --notification-max-width: 100%;
-    --notification-background: var(--c-link);
-    --notification-font-size: var(--font-size--sm);
     --notification-font-family: var(--font-family--primary);
     --notification-font-weight: var(--font-weight--normal);
-    --notification-padding: var(--spacer-base) var(--spacer-lg);
+    --notification-padding: var(--spacer-base);
   }
   @include for-desktop {
     margin: 0 0 var(--spacer-xs) 0;
+    --notification-close-top: var(--spacer-sm);
+  }
+  &__action {
+    display: var(--notification-action-display,block) !important;
   }
 }
 .slide-fade-enter-active,
@@ -83,12 +90,14 @@ export default {
   transform: translateY(40px);
   @include for-desktop {
     opacity: 0;
+    transform: translateY(0);
   }
 }
 .slide-fade-leave-to {
   transform: translateY(80px);
   @include for-desktop {
     opacity: 0;
+    transform: translateY(0);
   }
 }
 </style>
