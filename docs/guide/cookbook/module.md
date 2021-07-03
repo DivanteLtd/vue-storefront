@@ -419,30 +419,97 @@ Routes to be added must be _Array_ type even if it only has one element as you c
 
 ![route_liked_borderline](../images/route_liked.png)
 
-### 2-4. Recipe D (Use hooks)
-One of the most intuitive way to build a module is using hooks. Open source creators more than often intentionally leave hooks as many as possible to everywhere they think extendable for 3rd party developers to inject logic into the flow of program. Here we will look into how _Vue Storefront_ did it its way.
+### 2-4. Recipe D (Hooks inside a module)
+We have two main kinds of hooks `listener` and `mutator`. In this section, we will look into how to create hooks of both types.
 
+**How to create `hooks`?**
+
+1. Create the `hooks.ts` inside `./src/modules/example-module`.
+
+2. Import methods to create listener and mutator hooks from the `@vue-storefront/core/lib/hooks`:
+
+```js
+import { createListenerHook, createMutatorHook } from '@vue-storefront/core/lib/hooks'
+```
+
+3. Prepare our own `hooks`:
+```ts
+// abridged ...
+
+const {
+  hook: beforeExampleHook,
+  executor: beforeExampleExecutor
+} = createMutatorHook()
+
+// Also we can add some generic types to the hooks. The first argument is responsible for incoming data structure and the second one is type of returned data.
+
+const {
+  hook: beforeExampleHook,
+  executor: beforeExampleExecutor
+} = createMutatorHook<{ path: string, pathType: string, sizeX: number, sizeY: number }, { path: string }>()
+
+const {
+  hook: afterExampleHook,
+  executor: afterExampleExecutor
+} = createListenerHook()
+
+const exampleHooks = {
+  beforeExample: beforeExampleHook,
+  afterExample: afterExampleHook
+}
+const exampleHooksExecutors = {
+  beforeExample: beforeExampleExecutor,
+  afterExample: afterExampleExecutor
+}
+```
+
+4. Export created `hooks`:
+
+```js
+export {
+  exampleHooks,
+  exampleHooksExecutors
+}
+```
+
+**What is and why you need to call the `executor`?**
+
+In short `executor` is a function that will run all the collected hooks.
+Open source creators more than often intentionally leave hooks as many as possible to everywhere they think extendable for 3rd party developers to inject logic into the flow of the program.
+Ok, so why calling the `executor` is so important? It is important because without this all functions which you passed to hook will not be fired.
+
+**How to pass function to `hook`?**
+
+You just have to import the proper hook to any file inside your module and invoke it.
+
+```ts
+import { exampleHooks } from 'src/modules/example-module/hooks';
+
+exampleHooks.beforeExample(() => console.log('Do something!'))
+```
+
+**How to call `executor`?**
 1. Open the `index.ts` file of `example-module` again at `./src/modules/example-module`
 ```bash
 cd src/modules/example-module
 vi index.ts # of course you can open it with other editors!
 ```
 
-2. Import `coreHooks` from `core` :
-```ts{4}
+2. Import `exampleHooksExecutors` from `./src/modules/example-module/hooks` :
+```ts
 import { extendStore, isServer } from '@vue-storefront/core/helpers';
 import { StorefrontModule } from '@vue-storefront/core/lib/modules';
 import Liked from './components/Liked.vue';
-import { coreHooks  } from '@vue-storefront/core/hooks'; // Import hooks from core
+import { exampleHooksExecutors  } from 'src/modules/example-module/hooks'; // Import our hooks
 
 const examplePlugin = store => {
 // abridged ...
+}
 ```
 
-3. Call any hook you want to use as follows : 
-```ts{11-13}
+3. Call any hook you want to use as follows :
+```ts
 // ...abridged
-
 export const ExampleModule: StorefrontModule = function ({app, store, router, moduleConfig, appConfig}) {
   store.registerModule('example-module', exampleModuleStore);
 
@@ -451,35 +518,38 @@ export const ExampleModule: StorefrontModule = function ({app, store, router, mo
   router.addRoutes(exampleRoutes)
   router.beforeEach((to, from, next) => { next() })
 
-  coreHooks.afterAppInit(() => { // 
-    console.log('App has just been initialized')
-  })
-}
+  const relativeUrl = 'examplePath';
+  const width = 300;
+  const height = 100;
+  const pathType = 'product';
 
+  const { path } = exampleHooksExecutors.beforeExample({ path: relativeUrl, sizeX: width, sizeY: height, pathType })
+  console.log('Data retrieved from hooks:', path);
+}
 ```
 
 4. Confirm it's hooked, run the command at **Vue Storefront** root path to bootstrap **Vue Storefront** app
-```bash 
-docker-compose up 
+```bash
+docker-compose up
 ```
 or without `docker`
-```bash 
+```bash
 yarn dev
 ```
 
-Once again the app is up and running, it will spit out tons of logs indicating the jobs done including  : 
+Once again the app is up and running, it will spit out tons of logs indicating the jobs done including  :
 ```bash{2}
 app_1  | [module] VS Modules registration finished. { succesfulyRegistered: '0 / 0', registrationOrder: [] }
-app_1  | App has just been initialized # Successfully Hooked !
+app_1  | Data retrieved from hooks: examplePath # Successfully Hooked !
 app_1  | Result from ES for 3e9eb2ab7b4d96276c016ae9d5aa18116483667603e7e84ad2346627 (category),  ms=613 null
 app_1  | whole request [/liked]: 1323ms
 ```
 You can read [more in depth](#_3-hooking-into-hooks)
 
 ### 2-5. Recipe E (Manage module-level `config`)
-Sometimes you may need to pass values to populate fields in your module configuration. We give you the ability to pass a `config` object to `registerModule` function, giving you options to choose when you register the `module`. 
+Sometimes you may need to pass values to populate fields in your module configuration. We give you the ability to pass a `config` object to `registerModule` function, giving you options to choose when you register the `module`.
 
-Suppose you need to use a 3rd party service integrated to your storefront. Most of the time you need to provide an API credentials encapsulated in a request to the 3rd party so that they will know _you are you_ and process a service and return a result that belongs to you. This recipe tells you how to do it with using 3rd party account during module registration. 
+Suppose you need to use a 3rd party service integrated to your storefront. Most of the time you need to provide an API credentials encapsulated in a request to the 3rd party so that they will know _you are you_ and process a service and return a result that belongs to you. This recipe tells you how to do it with using 3rd party account during module registration.
 
 
 1. Open the `index.ts` file of `example-module` again at `./src/modules/example-module`
