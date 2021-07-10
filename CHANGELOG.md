@@ -118,6 +118,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Development hot-reload speed webpack config - ([#5559](https://github.com/vuestorefront/vue-storefront/issues/5559))
 - Set correct type for `productPageVisited` hook - @lukaszjedrasik ([#5997](https://github.com/vuestorefront/vue-storefront/issues/5997))
 
+### Fixed
+- Fixed the code to display the unique images when setting the mergeConfigurableChildren to false (#5093)
+
 ## [1.12.2] - 2020.07.28
 
 ### Added
