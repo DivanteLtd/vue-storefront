@@ -667,6 +667,7 @@
   "orders": {
     "directBackendSync": true,
     "endpoint": "/api/order",
+    "excludeFields": ["created_at","updated_at","attributes_metadata","stock","totals","meta_title","meta_description","thumbnail_label","small_image_label","image_label","thumbnail","small_image","image","swatch_image","meta_keyword","rates","rating","info","_score","weight","visibility","slug","url_key","url_path"],
     "payment_methods_mapping": {
     },
     "offline_orders": {
