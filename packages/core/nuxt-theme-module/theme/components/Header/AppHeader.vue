@@ -1,8 +1,11 @@
 <template>
   <div>
+    <SfOverlay :visible="isOverlayVisible" />
     <SfHeader
       class="sf-header--has-mobile-search"
       :class="{'header-on-top': isSearchOpen}"
+      :isNavVisible="true"
+      data-cy="app-header"
     >
       <!-- TODO: add mobile view buttons after SFUI team PR -->
       <template #logo>
@@ -11,8 +14,10 @@
         </nuxt-link>
       </template>
       <template #navigation>
-        <SfHeaderNavigationItem class="nav-item" v-e2e="'app-header-url_women'" label="WOMEN" :link="localePath('/c/women')"/>
-        <SfHeaderNavigationItem class="nav-item"  v-e2e="'app-header-url_men'" label="MEN" :link="localePath('/c/men')" />
+        <HeaderNav
+          @setOverlay="isOverlayVisible = $event"
+          :isMobile="isMobile"
+        />
       </template>
       <template #aside>
         <LocaleSelector class="smartphone-only" />
@@ -95,20 +100,21 @@
 </template>
 
 <script>
-import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay, SfMenuItem, SfLink } from '@storefront-ui/vue';
-import { useUiState } from '~/composables';
-import { useCart, useUser, cartGetters } from '<%= options.generate.replace.composables %>';
+import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay } from '@storefront-ui/vue';
+import { useUiState, useUiHelpers } from '~/composables';
+import { useCart, useWishlist, useUser, cartGetters } from '<%= options.generate.replace.composables %>';
 import { computed, ref, onBeforeUnmount, watch } from '@vue/composition-api';
-import { useUiHelpers } from '~/composables';
+import { onSSR } from '@vue-storefront/core';
 import LocaleSelector from './LocaleSelector';
 import SearchResults from '~/components/SearchResults';
+import HeaderNav from './HeaderNav';
 import { clickOutside } from '@storefront-ui/vue/src/utilities/directives/click-outside/click-outside-directive.js';
 import {
   mapMobileObserver,
   unMapMobileObserver
 } from '@storefront-ui/vue/src/utilities/mobile-observer.js';
 import debounce from 'lodash.debounce';
-import mockedSearchProducts from '../mockedSearchProducts.json';
+import mockedSearchProducts from '../../mockedSearchProducts.json';
 
 export default {
   components: {
@@ -121,19 +127,20 @@ export default {
     SfSearchBar,
     SearchResults,
     SfOverlay,
-    SfMenuItem,
-    SfLink
+    HeaderNav
   },
   directives: { clickOutside },
   setup(props, { root }) {
-    const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal } = useUiState();
+    const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen } = useUiState();
     const { setTermForUrl, getFacetsFromURL } = useUiHelpers();
     const { isAuthenticated, load: loadUser } = useUser();
-    const { cart } = useCart();
+    const { cart, load: loadCart } = useCart();
+    const { load: loadWishlist } = useWishlist();
     const term = ref(getFacetsFromURL().phrase);
     const isSearchOpen = ref(false);
     const searchBarRef = ref(null);
     const result = ref(null);
+    const isOverlayVisible = ref(false);
 
     const cartTotalItems = computed(() => {
       const count = cartGetters.getTotalItems(cart.value);
@@ -141,8 +148,6 @@ export default {
     });
 
     const accountIcon = computed(() => isAuthenticated.value ? 'profile_fill' : 'profile');
-
-    loadUser();
 
     // TODO: https://github.com/DivanteLtd/vue-storefront/issues/4927
     const handleAccountClick = async () => {
@@ -152,6 +157,12 @@ export default {
 
       toggleLoginModal();
     };
+
+    onSSR(async () => {
+      await loadUser();
+      await loadCart();
+      await loadWishlist();
+    });
 
     const closeSearch = () => {
       if (!isSearchOpen.value) return;
@@ -211,7 +222,9 @@ export default {
       closeOrFocusSearchBar,
       searchBarRef,
       isMobile,
-      removeSearchResults
+      removeSearchResults,
+      isOverlayVisible,
+      isMobileMenuOpen
     };
   }
 };
@@ -222,6 +235,7 @@ export default {
   --header-padding:  var(--spacer-sm);
   @include for-desktop {
     --header-padding: 0;
+    z-index: var(--header-wrapper-z-index, 1);
   }
   &__logo-image {
       height: 100%;
@@ -232,11 +246,7 @@ export default {
 }
 .nav-item {
   --header-navigation-item-margin: 0 var(--spacer-base);
-  .sf-header-navigation-item__item--mobile {
-    display: none;
-  }
 }
-
 .cart-badge {
   position: absolute;
   bottom: 40%;

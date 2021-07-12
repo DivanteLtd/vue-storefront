@@ -1,3 +1,5 @@
+const { megaMenuCategoriesQuery } = require('./queries');
+
 module.exports = {
   integrations: {
     ct: {
@@ -15,6 +17,9 @@ module.exports = {
         },
         currency: 'USD',
         country: 'US'
+      },
+      customQueries: {
+        'megamenu-categories-query': megaMenuCategoriesQuery
       }
     }
   }
