@@ -53,10 +53,10 @@ function mapStoreAndChannelToAgnosticStore (store: Store) {
       id: `${store?.id ?? ''}${channel?.id ? `/${channel?.id}` : ''}`.trim(),
       description: channel?.description ?? '',
       geoLocation: channel?.geoLocation ?? null,
-      locales: mapToLocales(channel?.descriptionAllLocales) ?? store.languages,
+      locales: (mapToLocales(channel?.descriptionAllLocales) ?? store.languages) ?? [],
       address: mapToAddress(channel?.address),
-      _storeID: store?.id ?? '',
-      _channelID: channel?.id ?? ''
+      _storeID: store?.id ?? null,
+      _channelID: channel?.id ?? null
     };
   };
 }
@@ -83,11 +83,12 @@ function gainAgnosticStoreItems (criteria?: FilterCriteriaRecord<Channel>) {
       ...mapChannelSetByKey(store, 'distributionChannels', criteria),
       ...mapChannelSetByKey(store, 'supplyChannels', criteria)
     ];
+
     return [
       ...acc,
-      ...(mappedStores.length
-        ? mappedStores
-        : [mapStoreAndChannelToAgnosticStore(store)()])
+      ...(!mappedStores.length && !criteria
+        ? [mapStoreAndChannelToAgnosticStore(store)()]
+        : mappedStores)
     ];
   };
 }
@@ -99,7 +100,7 @@ function gainAgnosticStoreItems (criteria?: FilterCriteriaRecord<Channel>) {
 function getItems (stores: StoresData, criteria: StoreFilterCriteria = {}): AgnosticStore[] {
   return filterArrayByCriteriaRecord<Store>(
     stores?.results,
-    criteria.store)
+    criteria?.store)
     ?.reduce(gainAgnosticStoreItems(criteria.channel), []) ?? [];
 }
 
